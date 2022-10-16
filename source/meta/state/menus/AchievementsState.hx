@@ -52,7 +52,7 @@ class AchievementsState extends MusicBeatState
     {
         super.create();
 
-		#if !html5
+		#if !android
 		Discord.changePresence('Scrolling In The Achievements', 'Achievement Screen', " ", TitleState.titleImage);
 		#end
 
@@ -118,6 +118,10 @@ class AchievementsState extends MusicBeatState
 		add(description);
 
 		changeSelection();
+	    
+	        #if android
+		addVirtualPad(UP_DOWN, A_B);
+		#end
     }
 
 	override function update(elapsed:Float)
@@ -135,13 +139,13 @@ class AchievementsState extends MusicBeatState
 		if (squeakSound > 2)
 			squeakSound = 1;
 
-		if (controls.DOWN_P)
+		if (controls.UI_DOWN_P)
 		{
 			FlxG.sound.play(Paths.sound('squeak' + squeakSound), 0.7);
 			squeakSound++;
 			changeSelection(1);
 		}
-		if (controls.UP_P)
+		if (controls.UI_UP_P)
 		{
 			FlxG.sound.play(Paths.sound('squeak' + squeakSound), 0.7);
 			squeakSound++;
