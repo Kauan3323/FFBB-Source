@@ -117,7 +117,7 @@ class Paths
 	public static function returnGraphic(key:String, ?library:String, ?textureCompression:Bool = false)
 	{
 		var path = getPath('images/$key.png', IMAGE, library);
-		if (Assets.exists(path))
+		if (FileSystem.exists(path))
 		{
 			if (!currentTrackedAssets.exists(key))
 			{
