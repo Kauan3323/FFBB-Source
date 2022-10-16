@@ -68,7 +68,7 @@ class CreditState extends MusicBeatState
     {
         super.create();
 
-        #if !html5
+                #if !android
 		Discord.changePresence('Checking Each Employee', 'Credits Menu', " ", TitleState.titleImage);
 		#end
 
@@ -135,6 +135,10 @@ class CreditState extends MusicBeatState
 		FlxG.mouse.visible = true;
 		FlxG.mouse.enabled = true;
 		FlxG.mouse.useSystemCursor = true;
+	    
+	        #if android
+		addVirtualPad(NONE, B);
+		#end
     }
 
 	override function update(elapsed:Float)
