@@ -41,6 +41,8 @@ import openfl.filters.ShaderFilter;
 import openfl.media.Sound;
 import openfl.utils.Assets;
 import sys.io.File;
+import openfl.utils.Assets as OpenFlAssets;
+
 
 using StringTools;
 
@@ -450,6 +452,8 @@ class PlayState extends MusicBeatState
 		bubbles.cameras = [bubbleHUD];
 		add(bubbles);
 
+		
+		
 		spatulaHUD = new SpatulaHUD(-200, 250);
 		spatulaHUD.cameras = [camHUD];
 		add(spatulaHUD);
@@ -498,6 +502,12 @@ class PlayState extends MusicBeatState
 				curImage = "freaky";
 		}
 
+		
+		#if android
+		addAndroidControls();
+		androidControls.visible = true;
+		#end
+			
 		//
 		keysArray = [
 			copyKey(Init.gameControls.get('LEFT')[0]),
@@ -506,8 +516,11 @@ class PlayState extends MusicBeatState
 			copyKey(Init.gameControls.get('RIGHT')[0])
 		];
 
-		FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
-		FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
+		if (!Init.trueSettings.get('Controller Mode'))
+		{
+			FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
+			FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
+		}
 		
 		Paths.clearUnusedMemory();
 
@@ -547,7 +560,7 @@ class PlayState extends MusicBeatState
 
 		if ((key >= 0)
 			&& !boyfriendStrums.autoplay
-			&& (FlxG.keys.checkStatus(eventKey, JUST_PRESSED))
+                        && (FlxG.keys.checkStatus(eventKey, JUST_PRESSED) || Init.trueSettings.get('Controller Mode'))
 			&& (FlxG.keys.enabled && !paused && (FlxG.state.active || FlxG.state.persistentUpdate)))
 		{
 			if (generatedMusic)
@@ -628,9 +641,11 @@ class PlayState extends MusicBeatState
 	}
 
 	override public function destroy() {
-		FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
-		FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
-
+		if (!Init.trueSettings.get('Controller Mode'))
+		{
+			FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
+			FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
+		}
 		super.destroy();
 	}
 
@@ -890,6 +905,9 @@ class PlayState extends MusicBeatState
 			}
 
 			noteCalls();
+			if (Init.trueSettings.get('Controller Mode'))
+				controllerInput();
+			
 		}
 
 		if ((curSong.toLowerCase() != 'doodle-duel' && curSong.toLowerCase() != 'on-ice' && curSong.toLowerCase() != 'plan-z' && curSong.toLowerCase() != 'pimpin') 
@@ -901,6 +919,40 @@ class PlayState extends MusicBeatState
 		}
 	}
 
+	function controllerInput()
+	{
+		var justPressArray:Array<Bool> = [
+			controls.LEFT_P,
+			controls.DOWN_P,
+			controls.UP_P,
+			controls.RIGHT_P
+		];
+
+		var justReleaseArray:Array<Bool> = [
+			controls.LEFT_R,
+			controls.DOWN_R,
+			controls.UP_R,
+			controls.RIGHT_R
+		];
+
+		if (justPressArray.contains(true))
+		{
+			for (i in 0...justPressArray.length)
+			{
+				if (justPressArray[i])
+					onKeyPress(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, true, -1, keysArray[i][0]));
+			}
+		}
+
+		if (justReleaseArray.contains(true))
+		{
+			for (i in 0...justReleaseArray.length)
+			{
+				if (justReleaseArray[i])
+					onKeyRelease(new KeyboardEvent(KeyboardEvent.KEY_UP, true, true, -1, keysArray[i][0]));
+			}
+		}
+	}
 	function noteCalls()
 	{
 		// reset strums
@@ -1361,7 +1413,7 @@ class PlayState extends MusicBeatState
 
 	public static function updateRPC(pausedRPC:Bool)
 	{
-		#if !html5
+		#if !android
 		var displayRPC:String = (pausedRPC) ? detailsPausedText : songDetails;
 
 		if (underwearHealth > -2)
@@ -1611,7 +1663,7 @@ class PlayState extends MusicBeatState
 
 			resyncVocals();
 
-			#if !html5
+			#if !android
 			// Song duration in a float, useful for the time left feature
 			songLength = songMusic.length;
 
