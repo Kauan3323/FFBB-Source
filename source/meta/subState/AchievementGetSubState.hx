@@ -26,7 +26,7 @@ class AchievementGetSubState extends MusicBeatSubState
     {
         super();
 
-		#if !html5
+		#if !android
 		Discord.changePresence('Earned An Anchievement: ' + getAchievementName(), iconRPC, " ", PlayState.curImage);
 		#end
 
