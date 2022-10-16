@@ -596,7 +596,7 @@ class TitleState extends MusicBeatState
 
 	function mainMenuSwitch()
 	{
-		#if !html5
+		#if !android
 		Discord.changePresence('Menu Screen', 'Main Menu', " ", titleImage);
 		#end
 		FlxTween.tween(logoBl, {y: -1000}, 1.2, {ease: FlxEase.backIn, onComplete: function(tween:FlxTween)
