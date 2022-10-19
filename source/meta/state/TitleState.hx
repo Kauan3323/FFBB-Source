@@ -466,8 +466,8 @@ class TitleState extends MusicBeatState
 			});
 		}
 
-		var up = controls.UI_UP;
-		var down = controls.UI_DOWN;
+		var up = controls.UI_UP_P;
+		var down = controls.UI_DOWN_P;
 		var up_p = controls.UI_UP_P;
 		var down_p = controls.UI_DOWN_P;
 		var controlArray:Array<Bool> = [up, down, up_p, down_p];
